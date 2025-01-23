@@ -1,0 +1,6 @@
+.zig-cache/
+*.dll
+*.obj
+*.lib
+*.pdb
+zig-out/
