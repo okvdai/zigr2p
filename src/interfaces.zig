@@ -1,6 +1,8 @@
 const std = @import("std");
 const squirrel = @import("squirrel.zig");
 const HMODULE = std.os.windows.HMODULE;
+var NSCreateInterface: *const fn (name: [*:0]const u8, status: ?*Plugin.Status) callconv(.C) ?*const anyopaque = undefined;
+var sysintf: *const Sys = undefined;
 
 pub const Plugin = struct {
     pub const Status = enum(u32) { ok, err };
@@ -12,7 +14,12 @@ pub const Plugin = struct {
 pub const Sys = extern struct {
     const Self = @This();
     vtable: *const VTable,
-    const VTable = extern struct {};
+    const VTable = extern struct {
+        Log: *const fn (*const Sys, Module: HMODULE, Level: LogLevel, Message: [*:0]u8) callconv(.C) void,
+        Unload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
+        Reload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
+    };
+    const LogLevel = enum(i32) { INFO, WARN, ERR };
 };
 
 pub const IdInterface = extern struct {
@@ -52,6 +59,7 @@ pub const IdInterface = extern struct {
 pub const CallbackInterface = extern struct {
     const Self = @This();
     vtable: *const VTable,
+    var data: *const PluginNorthstarData = undefined;
 
     const VTable = extern struct {
         Init: @TypeOf(&Init) = &Init,
@@ -63,7 +71,12 @@ pub const CallbackInterface = extern struct {
         RunFrame: @TypeOf(&RunFrame) = &RunFrame,
     };
 
-    export fn Init(_: HMODULE, _: *const PluginNorthstarData, _: bool) void {}
+    export fn Init(_: *const Self, nsmodule: HMODULE, initData: *const PluginNorthstarData, _: bool) void {
+        data = initData;
+        NSCreateInterface = @as(@TypeOf(NSCreateInterface), @ptrCast(std.os.windows.kernel32.GetProcAddress(nsmodule, "CreateInterface")));
+        sysintf = @alignCast(@ptrCast(NSCreateInterface("NSSys001", null)));
+        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("HELLO WOLD"));
+    }
     export fn Finalize() void {}
     export fn Unload() void {}
     export fn OnSqvmCreated(_: *anyopaque) void {}
