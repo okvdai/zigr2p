@@ -3,6 +3,7 @@ const squirrel = @import("squirrel.zig");
 const HMODULE = std.os.windows.HMODULE;
 var NSCreateInterface: *const fn (name: [*:0]const u8, status: ?*Plugin.Status) callconv(.C) ?*const anyopaque = undefined;
 var sysintf: *const Sys = undefined;
+var gpa = std.heap.GeneralPurposeAllocator(.{}).init;
 
 pub const Plugin = struct {
     pub const Status = enum(u32) { ok, err };
@@ -51,8 +52,12 @@ pub const IdInterface = extern struct {
         };
     }
 
-    pub fn new(name: [*:0]u8, logName: [*:0]u8, depName: [*:0]u8) IdInterface {
-        return IdInterface{ .name = name, .logName = logName, .depName = depName, .vtable = &.{} };
+    pub fn new(name: []const u8, logName: []const u8, depName: []const u8) IdInterface {
+        const nameZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, name) catch unreachable;
+        const logNameZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, logName) catch unreachable;
+        const depNameZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, depName) catch unreachable;
+
+        return IdInterface{ .name = nameZ.ptr, .logName = logNameZ.ptr, .depName = depNameZ.ptr, .vtable = &.{} };
     }
 };
 
@@ -75,10 +80,13 @@ pub const CallbackInterface = extern struct {
         data = initData;
         NSCreateInterface = @as(@TypeOf(NSCreateInterface), @ptrCast(std.os.windows.kernel32.GetProcAddress(nsmodule, "CreateInterface")));
         sysintf = @alignCast(@ptrCast(NSCreateInterface("NSSys001", null)));
-        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("HELLO WOLD"));
+        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Loaded plugin!"));
     }
     export fn Finalize() void {}
-    export fn Unload() void {}
+    export fn Unload() void {
+        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Unloading plugin..."));
+        _ = gpa.deinit();
+    }
     export fn OnSqvmCreated(_: *anyopaque) void {}
     export fn OnSqvmDestroying(_: *anyopaque) void {}
     export fn OnLibraryLoaded(_: HMODULE, _: [*:0]u8) void {}
