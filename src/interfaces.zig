@@ -1,4 +1,5 @@
 const std = @import("std");
+const config = @import("config");
 const squirrel = @import("squirrel.zig");
 const HMODULE = std.os.windows.HMODULE;
 var NSCreateInterface: *const fn (name: [*:0]const u8, status: ?*Plugin.Status) callconv(.C) ?*const anyopaque = undefined;
@@ -46,7 +47,7 @@ pub const IdInterface = extern struct {
     }
     export fn GetField(_: *const Self, field: Plugin.Field) i64 {
         return switch (field) {
-            Plugin.Field.ctx => @intFromEnum(Plugin.Ctx.client),
+            Plugin.Field.ctx => @intFromEnum(config.ctx),
             Plugin.Field.color => 0,
             else => 0,
         };
