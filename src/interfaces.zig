@@ -48,7 +48,7 @@ pub const IdInterface = extern struct {
     export fn GetField(_: *const Self, field: Plugin.Field) i64 {
         return switch (field) {
             Plugin.Field.ctx => @intFromEnum(config.ctx),
-            Plugin.Field.color => 0,
+            Plugin.Field.color => config.color,
             else => 0,
         };
     }

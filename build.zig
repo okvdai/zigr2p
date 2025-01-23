@@ -15,6 +15,7 @@ pub fn build(b: *std.Build) void {
         std.debug.print("Missing required parameter: 'ctx'", .{});
         std.process.exit(1);
     };
+    const color = b.option(u32, "color", "Plugin log color") orelse 0;
 
     const options = b.addOptions();
 
@@ -22,6 +23,7 @@ pub fn build(b: *std.Build) void {
     options.addOption([]const u8, "logName", logName);
     options.addOption([]const u8, "depName", depName);
     options.addOption(PluginCtx, "ctx", ctx);
+    options.addOption(u32, "color", color);
 
     const lib = b.addSharedLibrary(.{ .name = name, .root_source_file = b.path("src/root.zig"), .target = target, .optimize = optimize, .version = .{ .major = 0, .minor = 0, .patch = 0 } });
     lib.root_module.addOptions("config", options);
