@@ -8,7 +8,7 @@ To build a plugin, you must execute `zig build` with at least its required param
 
 ## Build parameters
 
-# Required
+### Required
 
 - `Dname` - The name of your plugin.
 - `Dctx` - The context for which your plugin is built:
@@ -16,7 +16,7 @@ To build a plugin, you must execute `zig build` with at least its required param
     - `client` - client plugin
     - `both` - server & client plugin
 
-# Optional
+### Optional
 
 - `DlogName` - The name displayed in the Northstar console when logging. This **should** be a 9 character uppercase letter string, but it doesn't have to be. If left undefined, it will inherit the value of `Dname`.
 - `DdepName` - Dependency name. This is used by other plugins that depend on this plugin to identify it. If left undefined, it will inherit the value of `Dname`.
