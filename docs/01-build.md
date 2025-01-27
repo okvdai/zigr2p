@@ -2,7 +2,7 @@
 
 zigr2p is built using the latest Mach nominated Zig version, which is currently `2024.11.0-mach`, or `0.14.0-dev.2577+271452d22`.
 
-Check the latest Mach nominated Zig version and how to download it on (Mach's website)[https://machengine.org/docs/nominated-zig/].
+Check the latest Mach nominated Zig version and how to download it on [Mach's website](https://machengine.org/docs/nominated-zig/).
 
 To build a plugin, you must execute `zig build` with at least its required parameters.
 
