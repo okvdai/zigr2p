@@ -1,6 +1,9 @@
 const std = @import("std");
 const config = @import("config");
 const squirrel = @import("squirrel.zig");
+
+var func = squirrel.SQFunc.convert("testsqfunc", &testsqfunc);
+
 const HMODULE = std.os.windows.HMODULE;
 var NSCreateInterface: *const fn (name: [*:0]const u8, status: ?*Plugin.Status) callconv(.C) ?*const anyopaque = undefined;
 var sysintf: *const Sys = undefined;
@@ -88,9 +91,29 @@ pub const CallbackInterface = extern struct {
         sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Unloading plugin..."));
         _ = gpa.deinit();
     }
-    export fn OnSqvmCreated(_: *anyopaque) void {}
-    export fn OnSqvmDestroying(_: *anyopaque) void {}
-    export fn OnLibraryLoaded(_: HMODULE, _: [*:0]u8) void {}
+    export fn OnSqvmCreated(_: *const Self, sqvm: *squirrel.VM) void {
+        switch (sqvm.context) {
+            squirrel.Ctx.client => {
+                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering CLIENT function testsqfunc"));
+                _ = squirrel.Register.Client(sqvm, &func, 0);
+            },
+            squirrel.Ctx.ui => {
+                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering UI function testsqfunc"));
+                _ = squirrel.Register.Client(sqvm, &func, 0);
+            },
+            squirrel.Ctx.server => {},
+            else => {},
+        }
+    }
+    export fn OnSqvmDestroying(_: *const Self, _: *squirrel.VM) void {}
+    export fn OnLibraryLoaded(_: *const Self, module: HMODULE, name: [*:0]u8) void {
+        if (std.mem.eql(u8, std.mem.span(name), "client.dll")) {
+            squirrel.Register.Client = @ptrFromInt(@intFromPtr(module) + 0x108E0);
+        }
+        if (std.mem.eql(u8, std.mem.span(name), "server.dll")) {
+            squirrel.Register.Server = @ptrFromInt(@intFromPtr(module) + 0x1DD10);
+        }
+    }
     export fn RunFrame() void {}
 
     pub const PluginNorthstarData = struct {
@@ -101,3 +124,8 @@ pub const CallbackInterface = extern struct {
         return CallbackInterface{ .vtable = &.{} };
     }
 };
+
+export fn testsqfunc() squirrel.Result {
+    std.debug.print("Testing...\n", .{});
+    return squirrel.Result.null;
+}
