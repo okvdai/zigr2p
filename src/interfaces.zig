@@ -68,7 +68,7 @@ pub const IdInterface = extern struct {
 pub const CallbackInterface = extern struct {
     const Self = @This();
     vtable: *const VTable,
-    var data: *const PluginNorthstarData = undefined;
+    var data: PluginNorthstarData = undefined;
 
     const VTable = extern struct {
         Init: @TypeOf(&Init) = &Init,
@@ -81,7 +81,7 @@ pub const CallbackInterface = extern struct {
     };
 
     export fn Init(_: *const Self, nsmodule: HMODULE, initData: *const PluginNorthstarData, _: bool) void {
-        data = initData;
+        data = initData.*;
         NSCreateInterface = @as(@TypeOf(NSCreateInterface), @ptrCast(std.os.windows.kernel32.GetProcAddress(nsmodule, "CreateInterface")));
         sysintf = @alignCast(@ptrCast(NSCreateInterface("NSSys001", null)));
         sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Loaded plugin!"));
