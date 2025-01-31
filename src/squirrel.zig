@@ -1,7 +1,5 @@
 const std = @import("std");
 
-pub const Buffer: u32 = 0;
-
 pub const Ctx = enum(c_uint) { server, client, ui, _ };
 pub const Result = enum(i32) { err = -1, null = 0, not_null = 1 };
 pub const Type = struct {
@@ -58,7 +56,7 @@ pub const SQFunc = extern struct {
     shortNameMaybe: [*:0]const u8,
     unknown2: u32,
     returnType: SQReturnType,
-    externalBufferPointer: *const u32,
+    externalBufferPointer: *allowzero u32,
     externalBufferSize: u64,
     unknown3: u64,
     unknown4: u64,
@@ -69,15 +67,15 @@ pub const SQFunc = extern struct {
             .squirrelFuncName = funcName,
             .cppFuncName = funcName,
             .helpText = "placeholder text",
-            .returnTypeString = "",
+            .returnTypeString = "void",
             .argTypes = "",
             .unknown1 = 0,
             .devLevel = 0,
             .shortNameMaybe = funcName,
             .unknown2 = 0,
             .returnType = SQReturnType.Default,
-            .externalBufferPointer = &Buffer,
-            .externalBufferSize = 0xFFFFFFFF,
+            .externalBufferPointer = @ptrFromInt(0),
+            .externalBufferSize = 0,
             .unknown3 = 0,
             .unknown4 = 0,
             .funcPtr = funcPtr,

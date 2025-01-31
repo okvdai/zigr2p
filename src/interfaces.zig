@@ -125,7 +125,7 @@ pub const CallbackInterface = extern struct {
     }
 };
 
-export fn testsqfunc() squirrel.Result {
+pub fn testsqfunc() callconv(.C) squirrel.Result {
     std.debug.print("Testing...\n", .{});
     return squirrel.Result.null;
 }
