@@ -61,45 +61,22 @@ pub const VM = extern struct {
     gap_2D0: [24]u8,
 };
 
-pub const Register = struct {
-    pub var Client: *const fn (sqvm: *VM, func: *SQFunc, bUnknown: u8) *anyopaque = undefined;
-    pub var Server: *const fn (sqvm: *VM, func: *SQFunc, bUnknown: u8) *anyopaque = undefined;
-};
-
-pub const SQFunc = extern struct {
-    squirrelFuncName: [*:0]const u8,
-    cppFuncName: [*:0]const u8,
-    helpText: [*:0]const u8,
-    returnTypeString: [*:0]const u8,
-    argTypes: [*:0]const u8,
-    unknown1: u32,
-    devLevel: u32,
-    shortNameMaybe: [*:0]const u8,
-    unknown2: u32,
-    returnType: SQReturnType,
-    externalBufferPointer: *allowzero u32,
-    externalBufferSize: u64,
-    unknown3: u64,
-    unknown4: u64,
-    funcPtr: *const fn () callconv(.C) Result,
-
-    pub fn convert(funcName: [*:0]const u8, funcPtr: *const fn () callconv(.C) Result) SQFunc {
-        return SQFunc{
-            .squirrelFuncName = funcName,
-            .cppFuncName = funcName,
-            .helpText = "placeholder text",
-            .returnTypeString = "void",
-            .argTypes = "",
-            .unknown1 = 0,
-            .devLevel = 0,
-            .shortNameMaybe = funcName,
-            .unknown2 = 0,
-            .returnType = SQReturnType.Default,
-            .externalBufferPointer = @ptrFromInt(0),
-            .externalBufferSize = 0,
-            .unknown3 = 0,
-            .unknown4 = 0,
-            .funcPtr = funcPtr,
-        };
-    }
-};
+pub fn SQFunc(T: type) type {
+    return extern struct {
+        squirrelFuncName: [*:0]const u8,
+        cppFuncName: [*:0]const u8,
+        helpText: [*:0]const u8,
+        returnTypeString: [*:0]const u8,
+        argTypes: [*:0]const u8,
+        unknown1: u32,
+        devLevel: u32,
+        shortNameMaybe: [*:0]const u8,
+        unknown2: u32,
+        returnType: SQReturnType,
+        externalBufferPointer: *allowzero u32,
+        externalBufferSize: u64,
+        unknown3: u64,
+        unknown4: u64,
+        funcPtr: *const T,
+    };
+}
