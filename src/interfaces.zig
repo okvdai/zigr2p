@@ -131,7 +131,7 @@ pub const CbInterface = extern struct {
     }
 };
 
-pub fn testsqfunc() callconv(.C) squirrel.Result {
+export fn testsqfunc() squirrel.Result {
     sysintf.vtable.Log(sysintf, cbHandle, Sys.LogLevel.INFO, @constCast("Testing..."));
     return squirrel.Result.null;
 }
