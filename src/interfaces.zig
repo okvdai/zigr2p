@@ -5,6 +5,8 @@ const squirrel = @import("squirrel.zig");
 pub var id: IdInterface = undefined;
 pub var cb: CallbackInterface = undefined;
 
+var cbHandle: HMODULE = undefined;
+
 var func = squirrel.SQFunc.convert("testsqfunc", &testsqfunc);
 
 const HMODULE = std.os.windows.HMODULE;
@@ -85,6 +87,7 @@ pub const CallbackInterface = extern struct {
 
     export fn Init(_: *const Self, nsmodule: HMODULE, initData: *const PluginNorthstarData, _: bool) void {
         data = initData.*;
+        cbHandle = data.pluginHandle;
         NSCreateInterface = @as(@TypeOf(NSCreateInterface), @ptrCast(std.os.windows.kernel32.GetProcAddress(nsmodule, "CreateInterface")));
         sysintf = @alignCast(@ptrCast(NSCreateInterface("NSSys001", null)));
         sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Loaded plugin!"));
@@ -129,6 +132,6 @@ pub const CallbackInterface = extern struct {
 };
 
 pub fn testsqfunc() callconv(.C) squirrel.Result {
-    std.debug.print("Testing...\n", .{});
+    sysintf.vtable.Log(sysintf, cbHandle, Sys.LogLevel.INFO, @constCast("Testing..."));
     return squirrel.Result.null;
 }
