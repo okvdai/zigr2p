@@ -3,7 +3,7 @@ const config = @import("config");
 const squirrel = @import("squirrel.zig");
 
 pub var id: IdInterface = undefined;
-pub var cb: CallbackInterface = undefined;
+pub var cb: CbInterface = undefined;
 
 var cbHandle: HMODULE = undefined;
 
@@ -70,7 +70,7 @@ pub const IdInterface = extern struct {
     }
 };
 
-pub const CallbackInterface = extern struct {
+pub const CbInterface = extern struct {
     const Self = @This();
     vtable: *const VTable,
     var data: PluginNorthstarData = undefined;
@@ -126,8 +126,8 @@ pub const CallbackInterface = extern struct {
         pluginHandle: HMODULE,
     };
 
-    pub fn new() CallbackInterface {
-        return CallbackInterface{ .vtable = &.{} };
+    pub fn new() CbInterface {
+        return CbInterface{ .vtable = &.{} };
     }
 };
 

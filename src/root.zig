@@ -17,8 +17,8 @@ export fn CreateInterface(name: [*:0]const u8, status: ?*interfaces.Plugin.Statu
         if (status) |ptr| {
             ptr.* = interfaces.Plugin.Status.ok;
         }
-        interfaces.cb = interfaces.CallbackInterface.new();
-        const ptr: *interfaces.CallbackInterface = &interfaces.cb;
+        interfaces.cb = interfaces.CbInterface.new();
+        const ptr: *interfaces.CbInterface = &interfaces.cb;
         return ptr;
     }
     if (status) |ptr| {
