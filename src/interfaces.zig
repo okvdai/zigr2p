@@ -2,6 +2,9 @@ const std = @import("std");
 const config = @import("config");
 const squirrel = @import("squirrel.zig");
 
+pub var id: IdInterface = undefined;
+pub var cb: CallbackInterface = undefined;
+
 var func = squirrel.SQFunc.convert("testsqfunc", &testsqfunc);
 
 const HMODULE = std.os.windows.HMODULE;
