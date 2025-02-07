@@ -45,7 +45,7 @@ pub const Sys = extern struct {
     const Self = @This();
     vtable: *const VTable,
     const VTable = extern struct {
-        Log: *const fn (*const Sys, Module: HMODULE, Level: LogLevel, Message: [*:0]u8) callconv(.C) void,
+        Log: *const fn (*const Sys, Module: HMODULE, Level: LogLevel, Message: [*:0]const u8) callconv(.C) void,
         Unload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
         Reload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
     };
@@ -110,21 +110,21 @@ pub const CbInterface = extern struct {
         cbHandle = data.pluginHandle;
         NSCreateInterface = @as(@TypeOf(NSCreateInterface), @ptrCast(std.os.windows.kernel32.GetProcAddress(nsmodule, "CreateInterface")));
         sysintf = @alignCast(@ptrCast(NSCreateInterface("NSSys001", null)));
-        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Loaded plugin!"));
+        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Loaded plugin!");
     }
     export fn Finalize() void {}
     export fn Unload() void {
-        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Unloading plugin..."));
+        sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Unloading plugin...");
         _ = gpa.deinit();
     }
     export fn OnSqvmCreated(_: *const Self, sqvm: *squirrel.VM) void {
         switch (sqvm.context) {
             squirrel.Ctx.client => {
-                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering CLIENT function testsqfunc"));
+                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Registering CLIENT function testsqfunc");
                 clRelay.register(sqvm, &test_fn, 0);
             },
             squirrel.Ctx.ui => {
-                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering UI function testsqfunc"));
+                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Registering UI function testsqfunc");
                 clRelay.register(sqvm, &test_fn, 0);
             },
             squirrel.Ctx.server => {},
@@ -152,6 +152,6 @@ pub const CbInterface = extern struct {
 };
 
 export fn testsqfunc() squirrel.Result {
-    sysintf.vtable.Log(sysintf, cbHandle, Sys.LogLevel.INFO, @constCast("Testing..."));
+    sysintf.vtable.Log(sysintf, cbHandle, Sys.LogLevel.INFO, "Testing...");
     return squirrel.Result.null;
 }
