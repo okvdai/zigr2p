@@ -1,13 +1,13 @@
 const std = @import("std");
 const config = @import("config");
 const squirrel = @import("squirrel.zig");
-const relay = @import("relay.zig");
+const Relay = @import("Relay.zig");
 
 pub var id: IdInterface = undefined;
 pub var cb: CbInterface = undefined;
 
-pub var clrelay: relay.Relay = undefined;
-pub var svrelay: relay.Relay = undefined;
+pub var clRelay: Relay = undefined;
+pub var svRelay: Relay = undefined;
 
 var cbHandle: HMODULE = undefined;
 
@@ -121,11 +121,11 @@ pub const CbInterface = extern struct {
         switch (sqvm.context) {
             squirrel.Ctx.client => {
                 sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering CLIENT function testsqfunc"));
-                clrelay.register(sqvm, &test_fn, 0);
+                clRelay.register(sqvm, &test_fn, 0);
             },
             squirrel.Ctx.ui => {
                 sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, @constCast("Registering UI function testsqfunc"));
-                clrelay.register(sqvm, &test_fn, 0);
+                clRelay.register(sqvm, &test_fn, 0);
             },
             squirrel.Ctx.server => {},
             else => {},
@@ -134,10 +134,10 @@ pub const CbInterface = extern struct {
     export fn OnSqvmDestroying(_: *const Self, _: *squirrel.VM) void {}
     export fn OnLibraryLoaded(_: *const Self, module: HMODULE, name: [*:0]u8) void {
         if (std.mem.eql(u8, std.mem.span(name), "client.dll")) {
-            clrelay = relay.Relay.New(squirrel.Ctx.client, module);
+            clRelay = Relay.New(squirrel.Ctx.client, module);
         }
         if (std.mem.eql(u8, std.mem.span(name), "server.dll")) {
-            svrelay = relay.Relay.New(squirrel.Ctx.server, module);
+            svRelay = Relay.New(squirrel.Ctx.server, module);
         }
     }
     export fn RunFrame() void {}
