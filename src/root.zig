@@ -10,16 +10,14 @@ export fn CreateInterface(name: [*:0]const u8, status: ?*interfaces.Plugin.Statu
             ptr.* = interfaces.Plugin.Status.ok;
         }
         interfaces.id = interfaces.IdInterface.new(config.name, config.logName, config.depName);
-        const ptr: *interfaces.IdInterface = &interfaces.id;
-        return ptr;
+        return &interfaces.id;
     }
     if (std.mem.eql(u8, std.mem.span(name), "PluginCallbacks001")) {
         if (status) |ptr| {
             ptr.* = interfaces.Plugin.Status.ok;
         }
         interfaces.cb = interfaces.CbInterface.new();
-        const ptr: *interfaces.CbInterface = &interfaces.cb;
-        return ptr;
+        return &interfaces.cb;
     }
     if (status) |ptr| {
         ptr.* = interfaces.Plugin.Status.err;
