@@ -123,8 +123,3 @@ pub const CbInterface = extern struct {
         return CbInterface{ .vtable = &.{} };
     }
 };
-
-export fn testsqfunc() squirrel.Result {
-    sysintf.vtable.Log(sysintf, cbHandle, Sys.LogLevel.INFO, "Testing...");
-    return squirrel.Result.null;
-}
