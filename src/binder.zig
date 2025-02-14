@@ -11,7 +11,7 @@ pub const Declaration = struct {
     ctx: squirrel.Ctx,
 };
 
-pub const Declarations: std.ArrayListAligned(Declaration, null) = undefined;
+pub var Declarations: std.ArrayListAligned(Declaration, null) = undefined;
 
 pub fn Register(sqvm: *squirrel.VM) void {
     switch (sqvm.context) {
