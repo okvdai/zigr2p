@@ -26,7 +26,7 @@ pub fn build(b: *std.Build) void {
     options.addOption(PluginCtx, "ctx", ctx);
     options.addOption(u32, "color", color);
 
-    const lib = b.addSharedLibrary(.{ .name = name, .root_source_file = b.path("src/root.zig"), .target = target, .optimize = optimize, .version = .{ .major = 0, .minor = 0, .patch = 0 } });
+    const lib = b.addSharedLibrary(.{ .name = name, .root_source_file = b.path("src/root.zig"), .target = target, .optimize = optimize, .version = .{ .major = 0, .minor = 0, .patch = 1 } });
     lib.root_module.addOptions("config", options);
     b.installArtifact(lib);
 }
