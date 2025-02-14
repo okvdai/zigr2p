@@ -3,7 +3,7 @@ const squirrel = @import("squirrel.zig");
 const std = @import("std");
 
 pub const Declaration = struct {
-    name: []u8,
+    name: [*:0]const u8,
     funcPtr: *const fn () callconv(.C) squirrel.Result,
     argTypes: [*:0]const u8,
     returnType: squirrel.SQReturnType,

@@ -80,19 +80,16 @@ pub const SQFunc = extern struct {
     unknown4: u64,
     funcPtr: *const fn () callconv(.C) Result,
 
-    pub fn New(name: []const u8, funcPtr: *const fn () callconv(.C) Result, argTypes: []const u8, returnType: SQReturnType, returnTypeString: []const u8) SQFunc {
-        const nameZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, name) catch unreachable;
-        const argTypesZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, argTypes) catch unreachable;
-        const returnTypeStringZ = std.mem.Allocator.dupeZ(gpa.allocator(), u8, returnTypeString) catch unreachable;
+    pub fn New(name: [*:0]const u8, funcPtr: *const fn () callconv(.C) Result, argTypes: [*:0]const u8, returnType: SQReturnType, returnTypeString: [*:0]const u8) SQFunc {
         return SQFunc{
-            .squirrelFuncName = nameZ,
-            .cppFuncName = nameZ,
+            .squirrelFuncName = name,
+            .cppFuncName = name,
             .helpText = "",
-            .returnTypeString = returnTypeStringZ,
-            .argTypes = argTypesZ,
+            .returnTypeString = returnTypeString,
+            .argTypes = argTypes,
             .unknown1 = 0,
             .devLevel = 0,
-            .shortNameMaybe = nameZ,
+            .shortNameMaybe = name,
             .unknown2 = 0,
             .returnType = returnType,
             .externalBufferPointer = @ptrFromInt(0),
