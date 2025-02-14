@@ -1,5 +1,6 @@
 const std = @import("std");
 pub const PluginCtx = @import("src/interfaces.zig").Plugin.Ctx;
+pub const binder = @import("src/binder.zig");
 
 pub fn build(b: *std.Build) void {
     var buf: [1024]u8 = undefined;
