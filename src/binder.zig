@@ -4,7 +4,7 @@ const std = @import("std");
 
 pub const Declaration = struct {
     name: []u8,
-    funcPtr: fn () callconv(.C) squirrel.Result,
+    funcPtr: *const fn () callconv(.C) squirrel.Result,
     argTypes: [*:0]const u8,
     returnType: squirrel.SQReturnType,
     returnTypeString: [*:0]const u8,
@@ -18,7 +18,7 @@ pub fn Register(sqvm: *squirrel.VM) void {
         squirrel.Ctx.client, squirrel.Ctx.ui => {
             for (Declarations.items) |decl| {
                 if (decl.ctx == squirrel.Ctx.client or decl.ctx == squirrel.Ctx.ui) {
-                    interfaces.clRelay.register(sqvm, squirrel.SQFunc.New(decl.name, &decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString));
+                    interfaces.clRelay.register(sqvm, squirrel.SQFunc.New(decl.name, decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString));
                     interfaces.sysintf.vtable.Log(interfaces.sysintf, interfaces.cbHandle, interfaces.Sys.LogLevel.INFO, decl.name);
                 }
             }
