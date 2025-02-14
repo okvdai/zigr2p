@@ -26,7 +26,7 @@ pub fn Register(sqvm: *squirrel.VM) void {
         squirrel.Ctx.server => {
             for (Declarations.items) |decl| {
                 if (decl.ctx == squirrel.Ctx.server) {
-                    interfaces.svRelay.register(sqvm, squirrel.SQFunc.New(decl.name, &decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString), 0);
+                    interfaces.svRelay.register(sqvm, squirrel.SQFunc.New(decl.name, decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString), 0);
                 }
             }
         },
