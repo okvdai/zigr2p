@@ -2,13 +2,14 @@ const std = @import("std");
 const PluginCtx = @import("src/interfaces.zig").Plugin.Ctx;
 
 pub fn build(b: *std.Build) void {
+    var buf: [1024]u8 = undefined;
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const name = b.option([]const u8, "name", "Plugin name") orelse {
         std.debug.print("Missing required parameter: 'name'\n", .{});
         std.process.exit(1);
     };
-    const logName = b.option([]const u8, "logName", "Plugin log name (displayed in the Northstar console)") orelse name;
+    const logName = b.option([]const u8, "logName", "Plugin log name (displayed in the Northstar console)") orelse std.ascii.upperString(&buf, name);
     const depName = b.option([]const u8, "depName", "Plugin dependency name (other plugins use this to identify your plugin)") orelse name;
 
     const ctx = b.option(PluginCtx, "ctx", "Sets the context of the plugin.") orelse {
