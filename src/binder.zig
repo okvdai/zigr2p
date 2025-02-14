@@ -2,10 +2,6 @@ const interfaces = @import("interfaces.zig");
 const squirrel = @import("squirrel.zig");
 const std = @import("std");
 
-var buffer: [128]u8 = undefined;
-var fba = std.heap.FixedBufferAllocator.init(&buffer);
-const allocator = fba.allocator();
-
 pub const Declaration = struct {
     name: []u8,
     funcPtr: fn () callconv(.C) squirrel.Result,
@@ -15,7 +11,7 @@ pub const Declaration = struct {
     ctx: squirrel.Ctx,
 };
 
-pub const Declarations = std.ArrayList(Declaration).init(allocator);
+pub const Declarations: std.ArrayListAligned(Declaration, null) = undefined;
 
 pub fn Register(sqvm: *squirrel.VM) void {
     switch (sqvm.context) {
