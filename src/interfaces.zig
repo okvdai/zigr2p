@@ -33,7 +33,7 @@ pub const Sys = extern struct {
         Unload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
         Reload: *const fn (*const Sys, Module: HMODULE) callconv(.C) void,
     };
-    const LogLevel = enum(i32) { INFO, WARN, ERR };
+    pub const LogLevel = enum(i32) { INFO, WARN, ERR };
 };
 
 pub const IdInterface = extern struct {
