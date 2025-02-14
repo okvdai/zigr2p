@@ -61,22 +61,40 @@ pub const VM = extern struct {
     gap_2D0: [24]u8,
 };
 
-pub fn SQFunc(T: type) type {
-    return extern struct {
-        squirrelFuncName: [*:0]const u8,
-        cppFuncName: [*:0]const u8,
-        helpText: [*:0]const u8,
-        returnTypeString: [*:0]const u8,
-        argTypes: [*:0]const u8,
-        unknown1: u32,
-        devLevel: u32,
-        shortNameMaybe: [*:0]const u8,
-        unknown2: u32,
-        returnType: SQReturnType,
-        externalBufferPointer: *allowzero u32,
-        externalBufferSize: u64,
-        unknown3: u64,
-        unknown4: u64,
-        funcPtr: *const T,
-    };
-}
+pub const SQFunc = extern struct {
+    squirrelFuncName: [*:0]const u8,
+    cppFuncName: [*:0]const u8,
+    helpText: [*:0]const u8,
+    returnTypeString: [*:0]const u8,
+    argTypes: [*:0]const u8,
+    unknown1: u32,
+    devLevel: u32,
+    shortNameMaybe: [*:0]const u8,
+    unknown2: u32,
+    returnType: SQReturnType,
+    externalBufferPointer: *allowzero u32,
+    externalBufferSize: u64,
+    unknown3: u64,
+    unknown4: u64,
+    funcPtr: *const fn () callconv(.C) Result,
+
+    pub fn New(name: [*:0]const u8, funcPtr: *const fn () callconv(.C) Result, argTypes: [*:0]const u8, returnType: SQReturnType, returnTypeString: [*:0]const u8) SQFunc {
+        return SQFunc{
+            .squirrelFuncName = name,
+            .cppFuncName = name,
+            .helpText = "",
+            .returnTypeString = returnTypeString,
+            .argTypes = argTypes,
+            .unknown1 = 0,
+            .devLevel = 0,
+            .shortNameMaybe = name,
+            .unknown2 = 0,
+            .returnType = returnType,
+            .externalBufferPointer = @ptrFromInt(0),
+            .externalBufferSize = 0,
+            .unknown3 = 0,
+            .unknown4 = 0,
+            .funcPtr = funcPtr,
+        };
+    }
+};

@@ -1,10 +1,9 @@
 const squirrel = @import("squirrel.zig");
-const test_fn = @import("interfaces.zig").test_fn;
 const std = @import("std");
 const HMODULE = std.os.windows.HMODULE;
 
 const Self = @This();
-register: *const fn (sqvm: *squirrel.VM, func: @TypeOf(&test_fn), bUnknown: u8) void,
+register: *const fn (sqvm: *squirrel.VM, func: squirrel.SQFunc, bUnknown: u8) void,
 
 pushroottable: *const fn (sqvm: *squirrel.VM) *anyopaque,
 pushstring: *const fn (sqvm: *squirrel.VM, str: *[*:0]const u8, length: c_long) *anyopaque,

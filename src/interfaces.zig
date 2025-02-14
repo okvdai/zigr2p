@@ -2,36 +2,20 @@ const std = @import("std");
 const config = @import("config");
 const squirrel = @import("squirrel.zig");
 const Relay = @import("Relay.zig");
+const binder = @import("binder.zig");
 
 pub var id: IdInterface = undefined;
 pub var cb: CbInterface = undefined;
 
 pub var clRelay: Relay = undefined;
 pub var svRelay: Relay = undefined;
+pub var sysintf: *const Sys = undefined;
 
-var cbHandle: HMODULE = undefined;
-
-pub const test_fn = squirrel.SQFunc(@TypeOf(testsqfunc)){
-    .squirrelFuncName = "testsqfunc",
-    .cppFuncName = "testsqfunc",
-    .helpText = "placeholder text",
-    .returnTypeString = "void",
-    .argTypes = "",
-    .unknown1 = 0,
-    .devLevel = 0,
-    .shortNameMaybe = "testsqfunc",
-    .unknown2 = 0,
-    .returnType = squirrel.SQReturnType.Default,
-    .externalBufferPointer = @ptrFromInt(0),
-    .externalBufferSize = 0,
-    .unknown3 = 0,
-    .unknown4 = 0,
-    .funcPtr = &testsqfunc,
-};
+pub var cbHandle: HMODULE = undefined;
 
 const HMODULE = std.os.windows.HMODULE;
 var NSCreateInterface: *const fn (name: [*:0]const u8, status: ?*Plugin.Status) callconv(.C) ?*const anyopaque = undefined;
-var sysintf: *const Sys = undefined;
+
 var gpa = std.heap.GeneralPurposeAllocator(.{}).init;
 
 pub const Plugin = struct {
@@ -118,18 +102,7 @@ pub const CbInterface = extern struct {
         _ = gpa.deinit();
     }
     export fn OnSqvmCreated(_: *const Self, sqvm: *squirrel.VM) void {
-        switch (sqvm.context) {
-            squirrel.Ctx.client => {
-                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Registering CLIENT function testsqfunc");
-                clRelay.register(sqvm, &test_fn, 0);
-            },
-            squirrel.Ctx.ui => {
-                sysintf.vtable.Log(sysintf, data.pluginHandle, Sys.LogLevel.INFO, "Registering UI function testsqfunc");
-                clRelay.register(sqvm, &test_fn, 0);
-            },
-            squirrel.Ctx.server => {},
-            else => {},
-        }
+        binder.Register(sqvm);
     }
     export fn OnSqvmDestroying(_: *const Self, _: *squirrel.VM) void {}
     export fn OnLibraryLoaded(_: *const Self, module: HMODULE, name: [*:0]u8) void {
