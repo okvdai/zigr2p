@@ -1,6 +1,7 @@
 const interfaces = @import("interfaces.zig");
 const squirrel = @import("squirrel.zig");
 const std = @import("std");
+const user_module = @import("userfile");
 
 pub const Declaration = struct {
     name: [*:0]const u8,
@@ -11,12 +12,10 @@ pub const Declaration = struct {
     ctx: squirrel.Ctx,
 };
 
-pub var Declarations: [32]Declaration = undefined;
-
 pub fn Register(sqvm: *squirrel.VM) void {
     switch (sqvm.context) {
         squirrel.Ctx.client, squirrel.Ctx.ui => {
-            for (Declarations) |decl| {
+            for (user_module.Declarations) |decl| {
                 if (decl.ctx == squirrel.Ctx.client or decl.ctx == squirrel.Ctx.ui) {
                     interfaces.clRelay.register(sqvm, squirrel.SQFunc.New(decl.name, decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString), 0);
                     interfaces.sysintf.vtable.Log(interfaces.sysintf, interfaces.cbHandle, interfaces.Sys.LogLevel.INFO, decl.name);
@@ -24,7 +23,7 @@ pub fn Register(sqvm: *squirrel.VM) void {
             }
         },
         squirrel.Ctx.server => {
-            for (Declarations) |decl| {
+            for (user_module.Declarations) |decl| {
                 if (decl.ctx == squirrel.Ctx.server) {
                     interfaces.svRelay.register(sqvm, squirrel.SQFunc.New(decl.name, decl.funcPtr, decl.argTypes, decl.returnType, decl.returnTypeString), 0);
                 }
