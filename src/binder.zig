@@ -1,7 +1,7 @@
 const interfaces = @import("interfaces.zig");
 const squirrel = @import("squirrel.zig");
 const std = @import("std");
-const user_module = @import("userfile");
+const user_module = @import("user_module");
 
 pub const Declaration = struct {
     name: [*:0]const u8,
