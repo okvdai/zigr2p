@@ -11,7 +11,7 @@ pub const Declaration = struct {
     ctx: squirrel.Ctx,
 };
 
-pub var Declarations: @TypeOf(std.ArrayList(Declaration).init(std.heap.FixedBufferAllocator.init([1024]u8).allocator())) = undefined;
+pub var Declarations: @TypeOf(std.ArrayList(Declaration).init(std.heap.FixedBufferAllocator.init([]u8{}).allocator())) = undefined;
 
 pub fn Register(sqvm: *squirrel.VM) void {
     switch (sqvm.context) {
