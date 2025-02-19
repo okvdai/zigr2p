@@ -11,7 +11,7 @@ pub const Declaration = struct {
     ctx: squirrel.Ctx,
 };
 
-pub var Declarations: [32]Declaration = undefined;
+pub var Declarations: [1]Declaration = undefined;
 
 pub fn Register(sqvm: *squirrel.VM) void {
     switch (sqvm.context) {
