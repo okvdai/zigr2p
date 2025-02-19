@@ -1,6 +1,7 @@
 const std = @import("std");
-const squirrel = @import("squirrel.zig");
-const interfaces = @import("interfaces.zig");
+pub const squirrel = @import("squirrel.zig");
+pub const interfaces = @import("interfaces.zig");
+pub const binder = @import("binder.zig");
 const config = @import("config");
 const windows = std.os.windows;
 
