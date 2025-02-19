@@ -3,7 +3,7 @@ const squirrel = @import("squirrel.zig");
 const std = @import("std");
 
 var buffer: [1024]u8 = undefined;
-var fba = std.heap.FixedBufferAllocator.init(buffer);
+var fba = std.heap.FixedBufferAllocator.init(&buffer);
 const allocator = fba.allocator();
 
 pub const Declaration = struct {
